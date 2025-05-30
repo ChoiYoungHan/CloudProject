@@ -11,7 +11,8 @@ pipeline {
   // 에이전트: Kubernetes의 kaniko PodTemplate 사용
   agent {
     kubernetes {
-      label 'kaniko'  // Jenkins PodTemplate에서 정의한 label
+        inheritFrom 'kaniko-agent',
+        defaultContainer 'jnlp'
     }
   }
 
@@ -42,6 +43,7 @@ pipeline {
                 --context `pwd` \
                 --dockerfile Dockerfile \
                 --destination 207567776727.dkr.ecr.us-west-2.amazonaws.com/${repo}:${tag} \
+                --docker-config=/kaniko/.docker \
                 --verbosity=info
               """
             }
