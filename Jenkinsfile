@@ -38,7 +38,14 @@ pipeline {
           // kaniko 컨테이너에서 Docker 이미지 빌드 및 ECR로 push
           dir(folder) {
             container('kaniko') {
-              sh "echo REPO: ${repo}, TAG: ${tag}"
+              sh '''
+                echo "🔍 도커 config.json 확인"
+                ls -al /kaniko/.docker
+                cat /kaniko/.docker/config.json || echo "❌ 파일 없음"
+
+                echo "🚀 REPO: ${repo}, TAG: ${tag}"
+              '''
+
             }
           }
         }
