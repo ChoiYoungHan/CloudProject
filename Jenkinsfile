@@ -11,7 +11,7 @@ pipeline {
   // 에이전트: Kubernetes의 kaniko PodTemplate 사용
   agent {
     kubernetes {
-        inheritFrom 'kaniko-agent',
+        inheritFrom 'kaniko-agent'
         defaultContainer 'jnlp'
     }
   }
