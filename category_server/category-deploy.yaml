@@ -1,0 +1,135 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: entertainment-deployment
+  labels:
+    app: entertainment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: entertainment
+  template:
+    metadata:
+      labels:
+        app: entertainment
+    spec:
+      serviceAccountName: flask-web-sa
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: Category-NodeGroup
+      containers:
+        - name: entertainment
+          image: 207567776727.dkr.ecr.us-west-2.amazonaws.com/cloud/cate:entertainment-v2
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              cpu: "100m"
+            limits:
+              cpu: "500m"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: entertainment-service
+spec:
+  type: ClusterIP
+  selector:
+    app: entertainment
+  ports:
+    - port: 80
+      targetPort: 5000
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: politics-deployment
+  labels:
+    app: politics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: politics
+  template:
+    metadata:
+      labels:
+        app: politics
+    spec:
+      serviceAccountName: flask-web-sa
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: Category-NodeGroup
+      containers:
+        - name: politics
+          image: 207567776727.dkr.ecr.us-west-2.amazonaws.com/cloud/cate:politics-v2
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              cpu: "100m"
+            limits:
+              cpu: "500m"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: politics-service
+spec:
+  type: ClusterIP
+  selector:
+    app: politics
+  ports:
+    - port: 80
+      targetPort: 5000
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: society-deployment
+  labels:
+    app: society
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: society
+  template:
+    metadata:
+      labels:
+        app: society
+    spec:
+      serviceAccountName: flask-web-sa
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: Category-NodeGroup
+      containers:
+        - name: society
+          image: 207567776727.dkr.ecr.us-west-2.amazonaws.com/cloud/cate:society-v2
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              cpu: "100m"
+            limits:
+              cpu: "500m"
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: society-service
+spec:
+  type: ClusterIP
+  selector:
+    app: society
+  ports:
+    - port: 80
+      targetPort: 5000
