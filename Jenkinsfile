@@ -38,7 +38,7 @@ pipeline {
           // kaniko 컨테이너에서 Docker 이미지 빌드 및 ECR로 push
           dir(folder) {
             container('kaniko') {
-              sh "/kaniko/executor --context=. --dockerfile=Dockerfile --destination=207567776727.dkr.ecr.us-west-2.amazonaws.com/${repo}:${tag} --docker-config=/kaniko/.docker --verbosity=debug"
+              sh "echo REPO: ${repo}, TAG: ${tag}"
             }
           }
         }
