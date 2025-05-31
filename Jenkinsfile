@@ -2,6 +2,7 @@ pipeline {
   agent {
     kubernetes {
       inheritFrom 'kaniko-agent'
+      podRetention: 'always'  // Pod 유지
       defaultContainer 'jnlp'
       yaml """
         apiVersion: v1
@@ -19,9 +20,7 @@ pipeline {
                   memory: "512Mi"
                   cpu: "200m"
             - name: kaniko
-              image: gcr.io/kaniko-project/executor:latest
-              command: ["/bin/sh"]
-              args: ["-c", "sleep 3600"]  # 컨테이너를 1시간 동안 유지
+              image: gcr.io/kaniko-project/executor:debug  // 디버그 이미지 사용
               tty: true
               volumeMounts:
               - name: docker-config
@@ -52,14 +51,17 @@ pipeline {
   stages {
     stage('Checkout SCM') {
       steps {
-        checkout scm  // Git 체크아웃
+        checkout scm
         sh """
           echo "📁 작업 디렉토리 확인:"
+          pwd
           ls -al
           echo "📂 /workspace 디렉토리 확인:"
           ls -al /workspace
           echo "📂 /workspace/main_portal 디렉토리 확인:"
           ls -al /workspace/main_portal || echo "main_portal 디렉토리 없음"
+          echo "📂 /workspace/category_server 디렉토리 확인:"
+          ls -al /workspace/category_server || echo "category_server 디렉토리 없음"
         """
       }
     }
@@ -92,6 +94,8 @@ pipeline {
                   cat /kaniko/.docker/config.json || echo "config.json 없음"
                   echo "📄 Kaniko 실행기 확인:"
                   ls -al /kaniko/executor || echo "executor 없음"
+                  echo "📄 셸 확인:"
+                  ls -al /bin/sh /busybox/sh || echo "셸 없음"
                 """
                 sh """
                   /kaniko/executor \
