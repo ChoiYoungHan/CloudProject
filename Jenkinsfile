@@ -53,14 +53,10 @@ spec:
 
           dir(folder) {
             container('kaniko') {
-              sh """
-                /kaniko/executor \
-                  --context dir://. \
-                  --dockerfile Dockerfile \
-                  --destination 207567776727.dkr.ecr.us-west-2.amazonaws.com/main-portal:latest \
-                  --docker-config=/kaniko/.docker \
-                  --verbosity=info
-              """
+              sh "echo 📁 현재 디렉토리: $(pwd)"
+              sh "echo 📄 Dockerfile 확인: && ls -al && cat Dockerfile"
+
+              
             }
           }
         }
