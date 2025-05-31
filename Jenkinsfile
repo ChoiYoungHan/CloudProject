@@ -2,9 +2,9 @@ pipeline {
   agent {
     kubernetes {
       inheritFrom 'kaniko-agent'
-      podRetention: 'always'  // Pod 유지
+      podRetention 'always'  // Pod 유지
       defaultContainer 'jnlp'
-      yaml """
+      yaml '''
         apiVersion: v1
         kind: Pod
         metadata:
@@ -14,7 +14,7 @@ pipeline {
           containers:
             - name: jnlp
               image: jenkins/inbound-agent:alpine
-              args: ['\${computer.jnlpmac}', '\${computer.name}']
+              args: ['${computer.jnlpmac}', '${computer.name}']
               resources:
                 requests:
                   memory: "512Mi"
@@ -36,7 +36,7 @@ pipeline {
             - name: docker-config
               secret:
                 secretName: kaniko-docker-config
-      """
+      '''
     }
   }
 
@@ -52,7 +52,7 @@ pipeline {
     stage('Checkout SCM') {
       steps {
         checkout scm
-        sh """
+        sh '''
           echo "📁 작업 디렉토리 확인:"
           pwd
           ls -al
@@ -62,7 +62,7 @@ pipeline {
           ls -al /workspace/main_portal || echo "main_portal 디렉토리 없음"
           echo "📂 /workspace/category_server 디렉토리 확인:"
           ls -al /workspace/category_server || echo "category_server 디렉토리 없음"
-        """
+        '''
       }
     }
     stage('Docker Build & Push') {
@@ -82,29 +82,29 @@ pipeline {
 
             dir(folder) {
               container('kaniko') {
-                sh """
-                  echo "📁 Kaniko 작업 디렉토리: \$(pwd)"
+                sh '''
+                  echo "📁 Kaniko 작업 디렉토리: $(pwd)"
                   echo "📂 /workspace 디렉토리 확인:"
                   ls -al /workspace
-                  echo "📂 /workspace/${folder} 디렉토리 확인:"
-                  ls -al /workspace/${folder} || echo "디렉토리 ${folder} 없음"
+                  echo "📂 /workspace/'${folder}' 디렉토리 확인:"
+                  ls -al /workspace/'${folder}' || echo "디렉토리 '${folder}' 없음"
                   echo "📄 Dockerfile 확인:"
-                  cat /workspace/${folder}/Dockerfile || echo "Dockerfile 없음"
+                  cat /workspace/'${folder}'/Dockerfile || echo "Dockerfile 없음"
                   echo "📄 /kaniko/.docker/config.json 확인:"
                   cat /kaniko/.docker/config.json || echo "config.json 없음"
                   echo "📄 Kaniko 실행기 확인:"
                   ls -al /kaniko/executor || echo "executor 없음"
                   echo "📄 셸 확인:"
                   ls -al /bin/sh /busybox/sh || echo "셸 없음"
-                """
-                sh """
+                '''
+                sh '''
                   /kaniko/executor \
-                    --context=/workspace/${folder} \
-                    --dockerfile=/workspace/${folder}/Dockerfile \
-                    --destination=207567776727.dkr.ecr.us-west-2.amazonaws.com/${repo}:${tag} \
+                    --context=/workspace/'${folder}' \
+                    --dockerfile=/workspace/'${folder}'/Dockerfile \
+                    --destination=207567776727.dkr.ecr.us-west-2.amazonaws.com/'${repo}':'${tag}' \
                     --docker-config=/kaniko/.docker \
                     --verbosity=debug
-                """
+                '''
               }
             }
           }
