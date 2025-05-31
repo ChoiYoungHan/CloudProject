@@ -97,14 +97,14 @@ pipeline {
                   echo "📄 셸 확인:"
                   ls -al /bin/sh /busybox/sh || echo "셸 없음"
                 '''
-                sh '''
+                sh """
                   /kaniko/executor \
-                    --context=/workspace/'${folder}' \
-                    --dockerfile=/workspace/'${folder}'/Dockerfile \
-                    --destination=207567776727.dkr.ecr.us-west-2.amazonaws.com/'${repo}':'${tag}' \
+                    --context=/workspace/${folder} \
+                    --dockerfile=/workspace/${folder}/Dockerfile \
+                    --destination=207567776727.dkr.ecr.us-west-2.amazonaws.com/${repo}:${tag} \
                     --docker-config=/kaniko/.docker \
                     --verbosity=debug
-                '''
+                """
               }
             }
           }
