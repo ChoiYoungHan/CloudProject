@@ -2,7 +2,7 @@ pipeline {
   agent {
     kubernetes {
       inheritFrom 'kaniko-agent'
-      podRetention always()  // PodRetention 객체 사용
+      podRetention always()  
       defaultContainer 'jnlp'
       yaml '''
         apiVersion: v1
@@ -20,7 +20,7 @@ pipeline {
                   memory: "512Mi"
                   cpu: "200m"
             - name: kaniko
-              image: gcr.io/kaniko-project/executor:debug  // 디버그 이미지 사용
+              image: gcr.io/kaniko-project/executor:debug  
               tty: true
               volumeMounts:
               - name: docker-config
