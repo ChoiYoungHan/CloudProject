@@ -2,28 +2,29 @@ pipeline {
   agent {
     kubernetes {
       inheritFrom 'kaniko-agent'
+      defaultContainer 'jnlp'
       yaml """
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: jnlp
-    image: jenkins/inbound-agent:alpine
-    args: ['\${computer.jnlpmac}', '\${computer.name}']
-    resources:
-      requests:
-        memory: "256Mi"
-        cpu: "100m"
-  - name: kaniko
-    image: gcr.io/kaniko-project/executor:latest
-    volumeMounts:
-    - name: docker-config
-      mountPath: /kaniko/.docker
-  volumes:
-  - name: docker-config
-    secret:
-      secretName: kaniko-docker-config
-"""
+        apiVersion: v1
+        kind: Pod
+        spec:
+          containers:
+            - name: jnlp
+              image: jenkins/inbound-agent:alpine
+              args: ['\${computer.jnlpmac}', '\${computer.name}']
+              resources:
+                requests:
+                  memory: "256Mi"
+                  cpu: "100m"
+            - name: kaniko
+              image: gcr.io/kaniko-project/executor:latest
+              volumeMounts:
+              - name: docker-config
+                mountPath: /kaniko/.docker
+                volumes:
+                  - name: docker-config
+                    secret:
+                      secretName: kaniko-docker-config
+      """
       defaultContainer 'jnlp'
     }
   }
