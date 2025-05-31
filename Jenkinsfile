@@ -57,7 +57,7 @@ spec:
                 /kaniko/executor \
                   --context dir://. \
                   --dockerfile Dockerfile \
-                  --destination 207567776727.dkr.ecr.us-west-2.amazonaws.com/${repo}:${tag} \
+                  --destination 207567776727.dkr.ecr.us-west-2.amazonaws.com/main-portal:latest \
                   --docker-config=/kaniko/.docker \
                   --verbosity=info
               """
