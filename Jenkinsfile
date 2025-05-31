@@ -2,7 +2,7 @@ pipeline {
   agent {
     kubernetes {
       inheritFrom 'kaniko-agent'
-      podRetention 'always'  // Pod 유지
+      podRetention always()  // PodRetention 객체 사용
       defaultContainer 'jnlp'
       yaml '''
         apiVersion: v1
