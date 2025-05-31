@@ -6,6 +6,9 @@ pipeline {
       yaml """
         apiVersion: v1
         kind: Pod
+        metadata:
+          labels:
+            app: jenkins-pipeline
         spec:
           containers:
             - name: jnlp
@@ -17,6 +20,8 @@ pipeline {
                   cpu: "200m"
             - name: kaniko
               image: gcr.io/kaniko-project/executor:latest
+              command: ["/bin/sh"]
+              args: ["-c", "sleep 3600"]  # 컨테이너를 1시간 동안 유지
               tty: true
               volumeMounts:
               - name: docker-config
@@ -25,6 +30,9 @@ pipeline {
                 requests:
                   memory: "1Gi"
                   cpu: "500m"
+                limits:
+                  memory: "2Gi"
+                  cpu: "1"
           volumes:
             - name: docker-config
               secret:
@@ -42,9 +50,22 @@ pipeline {
   }
 
   stages {
+    stage('Checkout SCM') {
+      steps {
+        checkout scm  // Git 체크아웃
+        sh """
+          echo "📁 작업 디렉토리 확인:"
+          ls -al
+          echo "📂 /workspace 디렉토리 확인:"
+          ls -al /workspace
+          echo "📂 /workspace/main_portal 디렉토리 확인:"
+          ls -al /workspace/main_portal || echo "main_portal 디렉토리 없음"
+        """
+      }
+    }
     stage('Docker Build & Push') {
       steps {
-        timeout(time: 30, unit: 'MINUTES') {
+        timeout(time: 60, unit: 'MINUTES') {
           script {
             def folder = (params.SERVICE == 'main_portal') 
                           ? 'main_portal' 
@@ -59,10 +80,8 @@ pipeline {
 
             dir(folder) {
               container('kaniko') {
-                // 디버깅: 작업 디렉토리와 파일 확인
                 sh """
-                  echo "📁 작업 디렉토리: \$(pwd)"
-                  ls -al
+                  echo "📁 Kaniko 작업 디렉토리: \$(pwd)"
                   echo "📂 /workspace 디렉토리 확인:"
                   ls -al /workspace
                   echo "📂 /workspace/${folder} 디렉토리 확인:"
@@ -71,6 +90,8 @@ pipeline {
                   cat /workspace/${folder}/Dockerfile || echo "Dockerfile 없음"
                   echo "📄 /kaniko/.docker/config.json 확인:"
                   cat /kaniko/.docker/config.json || echo "config.json 없음"
+                  echo "📄 Kaniko 실행기 확인:"
+                  ls -al /kaniko/executor || echo "executor 없음"
                 """
                 sh """
                   /kaniko/executor \
