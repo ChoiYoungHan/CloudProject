@@ -20,10 +20,10 @@ pipeline {
               volumeMounts:
               - name: docker-config
                 mountPath: /kaniko/.docker
-                volumes:
-                  - name: docker-config
-                    secret:
-                      secretName: kaniko-docker-config
+          volumes:
+            - name: docker-config
+              secret:
+                secretName: kaniko-docker-config
       """
       defaultContainer 'jnlp'
     }
