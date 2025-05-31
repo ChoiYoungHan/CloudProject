@@ -25,6 +25,9 @@ pipeline {
                         ? 'main_portal' 
                         : "category_server/${params.SERVICE}"
 
+          // Dockerfile 경로
+          def dockerfile = "${folder}/Dockerfile"
+
           // ECR repository 이름 지정
           def repo = (params.SERVICE == 'main_portal') 
                       ? 'main-portal' 
@@ -39,13 +42,13 @@ pipeline {
           dir(folder) {
             container('kaniko') {
               sh '''
-                echo "🔍 도커 config.json 확인"
-                ls -al /kaniko/.docker
-                cat /kaniko/.docker/config.json || echo "❌ 파일 없음"
-
-                echo "🚀 REPO: ${repo}, TAG: ${tag}"
+                /kaniko/executor \
+                  --context dir:///workspace/${folder} \
+                  --dockerfile /workspace/${dockerfile} \
+                  --destination 207567776727.dkr.ecr.us-west-2.amazonaws.com/${repo}:${tag} \
+                  --docker-config=/kaniko/.docker \
+                  --verbosity=info
               '''
-
             }
           }
         }
