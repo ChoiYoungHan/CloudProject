@@ -53,7 +53,7 @@ spec:
 
           dir(folder) {
             container('kaniko') {
-              sh "echo 📁 현재 디렉토리: $(pwd)"
+              sh "echo 📁 현재 디렉토리: \$(pwd)"
               sh "echo 📄 Dockerfile 확인: && ls -al && cat Dockerfile"
 
               
