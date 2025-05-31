@@ -99,9 +99,9 @@ pipeline {
                 '''
                 sh """
                   /kaniko/executor \
-                    --context=/workspace/${folder} \
-                    --dockerfile=/workspace/${folder}/Dockerfile \
-                    --destination=207567776727.dkr.ecr.us-west-2.amazonaws.com/${repo}:${tag} \
+                    --context=/workspace/main-portal \
+                    --dockerfile=/workspace/main-portal/Dockerfile \
+                    --destination=207567776727.dkr.ecr.us-west-2.amazonaws.com/main-portal:latest \
                     --docker-config=/kaniko/.docker \
                     --verbosity=debug
                 """
