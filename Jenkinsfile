@@ -16,10 +16,6 @@ spec:
         cpu: "100m"
   - name: kaniko
     image: gcr.io/kaniko-project/executor:latest
-    command:
-    - ""
-    args:
-    - ""
     volumeMounts:
     - name: docker-config
       mountPath: /kaniko/.docker
