@@ -55,8 +55,8 @@ spec:
             container('kaniko') {
               sh """
                 /kaniko/executor \
-                  --context dir:///workspace/${folder} \
-                  --dockerfile /workspace/${dockerfile} \
+                  --context dir://. \
+                  --dockerfile Dockerfile \
                   --destination 207567776727.dkr.ecr.us-west-2.amazonaws.com/${repo}:${tag} \
                   --docker-config=/kaniko/.docker \
                   --verbosity=info
