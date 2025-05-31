@@ -1,5 +1,37 @@
 pipeline {
-  // 파라미터: 어떤 서비스를 빌드할지 입력받음
+  agent {
+    kubernetes {
+      label 'kaniko-agent'
+      yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: jnlp
+    image: jenkins/inbound-agent:alpine
+    args: ['\${computer.jnlpmac}', '\${computer.name}']
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest
+    command:
+    - ""
+    args:
+    - ""
+    volumeMounts:
+    - name: docker-config
+      mountPath: /kaniko/.docker
+  volumes:
+  - name: docker-config
+    secret:
+      secretName: kaniko-docker-config
+"""
+      defaultContainer 'jnlp'
+    }
+  }
+
   parameters {
     string(
       name: 'SERVICE',
@@ -8,47 +40,31 @@ pipeline {
     )
   }
 
-  // 에이전트: Kubernetes의 kaniko PodTemplate 사용
-  agent {
-    kubernetes {
-        inheritFrom 'kaniko-agent'
-        defaultContainer 'jnlp'
-    }
-  }
-
   stages {
     stage('Docker Build & Push') {
       steps {
         script {
-          // 빌드할 폴더 경로 계산
           def folder = (params.SERVICE == 'main_portal') 
                         ? 'main_portal' 
                         : "category_server/${params.SERVICE}"
-
-          // Dockerfile 경로
           def dockerfile = "${folder}/Dockerfile"
-
-          // ECR repository 이름 지정
           def repo = (params.SERVICE == 'main_portal') 
                       ? 'main-portal' 
                       : 'category'
-
-          // 이미지 태그 지정
           def tag = (params.SERVICE == 'main_portal') 
                      ? 'latest' 
                      : params.SERVICE
 
-          // kaniko 컨테이너에서 Docker 이미지 빌드 및 ECR로 push
           dir(folder) {
             container('kaniko') {
-              sh '''
+              sh """
                 /kaniko/executor \
                   --context dir:///workspace/${folder} \
                   --dockerfile /workspace/${dockerfile} \
                   --destination 207567776727.dkr.ecr.us-west-2.amazonaws.com/${repo}:${tag} \
                   --docker-config=/kaniko/.docker \
                   --verbosity=info
-              '''
+              """
             }
           }
         }
