@@ -12,8 +12,6 @@ spec:
   containers:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:latest
-    command:
-    - /busybox/cat
     tty: true
 '''
         }
