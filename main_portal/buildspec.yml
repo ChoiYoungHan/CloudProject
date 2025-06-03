@@ -24,6 +24,7 @@ phases:
       - pwd
       - echo Directory contents after cd:
       - ls -la
+      - echo IMAGE_NAME is $IMAGE_NAME
       - docker build -t $IMAGE_NAME -f Dockerfile .
   post_build:
     commands:
