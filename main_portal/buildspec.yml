@@ -14,7 +14,16 @@ phases:
   build:
     commands:
       - echo Building the Docker image...
+      - echo Current directory:
+      - pwd
+      - echo Directory contents:
+      - ls -la
+      - echo Moving to main_portal directory...
       - cd main_portal
+      - echo Current directory after cd:
+      - pwd
+      - echo Directory contents after cd:
+      - ls -la
       - docker build -t $IMAGE_NAME -f Dockerfile .
   post_build:
     commands:
