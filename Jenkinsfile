@@ -13,7 +13,8 @@ spec:
   - name: kaniko
     image: gcr.io/kaniko-project/executor:v1.24.0
     command:
-    - /busybox/cat
+    - sleep
+    - "9999"
     tty: true
     volumeMounts:
     - name: aws-credentials
