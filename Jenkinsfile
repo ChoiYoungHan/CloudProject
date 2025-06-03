@@ -11,7 +11,7 @@ spec:
   serviceAccountName: kaniko
   containers:
   - name: kaniko
-    image: gcr.io/kaniko-project/executor:v1.24.0
+    image: gcr.io/kaniko-project/executor:v1.24.0-debug
     command:
     - sleep
     - "9999"
