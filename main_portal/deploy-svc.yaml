@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-web
+  template:
+    metadata:
+      labels:
+        app: flask-web
+    spec:
+      serviceAccountName: flask-web-sa
+      containers:
+        - name: flask-web
+          image: 207567776727.dkr.ecr.us-west-2.amazonaws.com/cloud/main-portal:latest
+          ports:
+            - containerPort: 80
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: Category-NodeGroup
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-web-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: flask-web
+  ports:
+    - port: 80
+      targetPort: 5000

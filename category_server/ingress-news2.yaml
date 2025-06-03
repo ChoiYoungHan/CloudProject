@@ -1,0 +1,80 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: 
+  name: news-ingress2
+  namespace: default
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: flask-web-svc
+                port:
+                  number: 80
+
+          - path: /all
+            pathType: Prefix
+            backend:
+              service:
+                name: flask-web-svc
+                port:
+                  number: 80
+          
+
+          
+          - path: /static
+            pathType: Prefix
+            backend:
+              service:
+                name: flask-web-svc
+                port:
+                  number: 80
+
+          - path: /category/politics
+            pathType: Prefix
+            backend:
+              service:
+                name: politics-service
+                port:
+                  number: 80
+
+          - path: /cpu-burn
+            pathType: Prefix
+            backend:
+              service:
+                name: politics-service
+                port:
+                  number: 80
+
+          - path: /cpu-stress
+            pathType: Prefix
+            backend:
+              service:
+                name: politics-service
+                port:
+                  number: 80        
+
+          - path: /category/society
+            pathType: Prefix
+            backend:
+              service:
+                name: society-service
+                port:
+                  number: 80
+          
+          - path: /category/entertainment
+            pathType: Prefix
+            backend:
+              service:
+                name: entertainment-service
+                port:
+                  number: 80
+
+          
