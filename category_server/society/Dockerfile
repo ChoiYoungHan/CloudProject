@@ -7,7 +7,8 @@ COPY requirements.txt .
 
 RUN rm -f /etc/ssl/certs/emSign_Root_CA_-_C1.pem && update-ca-certificates
 
-RUN apt-get update && apt-get install -y python3-pip
+RUN dpkg --configure -a && apt-get clean && \
+    apt-get update && apt-get install -y python3-pip
 # 의존성 먼저 설치
 RUN pip install --no-cache-dir --upgrade pip setuptools
 
