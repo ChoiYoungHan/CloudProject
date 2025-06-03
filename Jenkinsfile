@@ -39,6 +39,7 @@ spec:
                               --dockerfile `pwd`/category_server/entertainment/Dockerfile \
                               --destination ${ECR_REGISTRY}/category/entertainment:1.0.${BUILD_NUMBER} \
                               --single-snapshot \
+                              --skip-unused-stages
                               --cache=false
                             '''
                         }
@@ -53,6 +54,7 @@ spec:
                               --dockerfile `pwd`/category_server/politics/Dockerfile \
                               --destination ${ECR_REGISTRY}/category/politics:1.0.${BUILD_NUMBER} \
                               --single-snapshot \
+                              --skip-unused-stages
                               --cache=false
                             '''
                         }
@@ -67,6 +69,7 @@ spec:
                               --dockerfile `pwd`/category_server/society/Dockerfile \
                               --destination ${ECR_REGISTRY}/category/society:1.0.${BUILD_NUMBER} \
                               --single-snapshot \
+                              --skip-unused-stages
                               --cache=false
                             '''
                         }
@@ -81,6 +84,7 @@ spec:
                               --dockerfile `pwd`/main_portal/Dockerfile \
                               --destination ${ECR_REGISTRY}/main-portal:1.0.${BUILD_NUMBER} \
                               --single-snapshot \
+                              --skip-unused-stages
                               --cache=false
                             '''
                         }
