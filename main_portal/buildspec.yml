@@ -7,17 +7,6 @@ phases:
       - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 207567776727.dkr.ecr.us-west-2.amazonaws.com
   build:
     commands:
-      - echo Building the Docker image...
-      - echo Current directory:
-      - pwd
-      - echo Directory contents:
-      - ls -la
-      - echo Moving to main_portal directory...
-      - cd main_portal
-      - echo Current directory after cd:
-      - pwd
-      - echo Directory contents after cd:
-      - ls -la
       - docker build -t main-portal .
   post_build:
     commands:
