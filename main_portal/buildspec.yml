@@ -3,8 +3,6 @@ version: 0.2
 env:
   variables:
     IMAGE_NAME: main-portal
-    DOCKERFILE_PATH: main_portal/Dockerfile
-    CONTEXT_DIR: main_portal
     REGION: us-west-2
     ECR_REPO: 207567776727.dkr.ecr.us-west-2.amazonaws.com
 
@@ -16,7 +14,7 @@ phases:
   build:
     commands:
       - echo Building the Docker image...
-      - docker build -t $IMAGE_NAME -f $DOCKERFILE_PATH $CONTEXT_DIR
+      - docker build -t $IMAGE_NAME -f Dockerfile .
   post_build:
     commands:
       - echo Tagging and pushing the Docker image...
