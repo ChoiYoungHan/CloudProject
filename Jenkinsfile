@@ -11,24 +11,15 @@ spec:
   serviceAccountName: kaniko
   containers:
   - name: kaniko
-    image: gcr.io/kaniko-project/executor:v1.24.0-debug
+    image: gcr.io/kaniko-project/executor:debug
     command:
-    - sleep
-    - "9999"
+    - /busybox/cat
     tty: true
-    volumeMounts:
-    - name: aws-credentials
-      mountPath: /root/.aws
-      readOnly: true
-  volumes:
-  - name: aws-credentials
-    secret:
-      secretName: aws-credentials
 '''
         }
     }
     environment {
-        AWS_REGION = 'us-west-2'
+        AWS_REGION = 'us-west-2' 
         ECR_REGISTRY = '207567776727.dkr.ecr.us-west-2.amazonaws.com'
     }
     stages {
@@ -47,8 +38,7 @@ spec:
                               --context `pwd`/category_server/entertainment \
                               --dockerfile `pwd`/category_server/entertainment/Dockerfile \
                               --destination ${ECR_REGISTRY}/category/entertainment:1.0.${BUILD_NUMBER} \
-                              --cache=true \
-                              --cache-dir=/cache \
+                              --cache=false \
                               --verbosity=debug
                             '''
                         }
@@ -62,8 +52,7 @@ spec:
                               --context `pwd`/category_server/politics \
                               --dockerfile `pwd`/category_server/politics/Dockerfile \
                               --destination ${ECR_REGISTRY}/category/politics:1.0.${BUILD_NUMBER} \
-                              --cache=true \
-                              --cache-dir=/cache \
+                              --cache=false \
                               --verbosity=debug
                             '''
                         }
@@ -77,8 +66,7 @@ spec:
                               --context `pwd`/category_server/society \
                               --dockerfile `pwd`/category_server/society/Dockerfile \
                               --destination ${ECR_REGISTRY}/category/society:1.0.${BUILD_NUMBER} \
-                              --cache=true \
-                              --cache-dir=/cache \
+                              --cache=false \
                               --verbosity=debug
                             '''
                         }
@@ -92,8 +80,7 @@ spec:
                               --context `pwd`/main_portal \
                               --dockerfile `pwd`/main_portal/Dockerfile \
                               --destination ${ECR_REGISTRY}/main-portal:1.0.${BUILD_NUMBER} \
-                              --cache=true \
-                              --cache-dir=/cache \
+                              --cache=false \
                               --verbosity=debug
                             '''
                         }
