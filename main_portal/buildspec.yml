@@ -1,0 +1,24 @@
+version: 0.2
+
+env:
+  variables:
+    IMAGE_NAME: main-portal
+    DOCKERFILE_PATH: main_portal/Dockerfile
+    CONTEXT_DIR: main_portal
+    REGION: us-west-2
+    ECR_REPO: 207567776727.dkr.ecr.us-west-2.amazonaws.com
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_REPO
+  build:
+    commands:
+      - echo Building the Docker image...
+      - docker build -t $IMAGE_NAME -f $DOCKERFILE_PATH $CONTEXT_DIR
+  post_build:
+    commands:
+      - echo Tagging and pushing the Docker image...
+      - docker tag $IMAGE_NAME:latest $ECR_REPO/$IMAGE_NAME:latest
+      - docker push $ECR_REPO/$IMAGE_NAME:latest
