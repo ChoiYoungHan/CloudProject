@@ -1,0 +1,23 @@
+version: 0.2
+
+env:
+  variables:
+    IMAGE_NAME: entertainment
+    DOCKERFILE_PATH: category_server/entertainment/Dockerfile
+    CONTEXT: category_server/entertainment
+    ECR_REPO: 207567776727.dkr.ecr.us-west-2.amazonaws.com
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin $ECR_REPO
+  build:
+    commands:
+      - echo Building Docker image...
+      - docker build -t $IMAGE_NAME -f $DOCKERFILE_PATH $CONTEXT
+  post_build:
+    commands:
+      - echo Tagging and pushing the Docker image...
+      - docker tag $IMAGE_NAME:latest $ECR_REPO/$IMAGE_NAME:latest
+      - docker push $ECR_REPO/$IMAGE_NAME:latest
