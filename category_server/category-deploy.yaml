@@ -19,7 +19,7 @@ spec:
         eks.amazonaws.com/nodegroup: Category-NodeGroup
       containers:
         - name: entertainment
-          image: 207567776727.dkr.ecr.us-west-2.amazonaws.com/cloud/cate:entertainment-v2
+          image: 207567776727.dkr.ecr.us-west-2.amazonaws.com/entertainment:latest
           ports:
             - containerPort: 5000
           resources:
@@ -65,7 +65,7 @@ spec:
         eks.amazonaws.com/nodegroup: Category-NodeGroup
       containers:
         - name: politics
-          image: 207567776727.dkr.ecr.us-west-2.amazonaws.com/cloud/cate:politics-v2
+          image: 207567776727.dkr.ecr.us-west-2.amazonaws.com/politics:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
@@ -112,7 +112,7 @@ spec:
         eks.amazonaws.com/nodegroup: Category-NodeGroup
       containers:
         - name: society
-          image: 207567776727.dkr.ecr.us-west-2.amazonaws.com/cloud/cate:society-v2
+          image: 207567776727.dkr.ecr.us-west-2.amazonaws.com/society:latest
           ports:
             - containerPort: 5000
           resources:
