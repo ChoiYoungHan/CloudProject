@@ -3,8 +3,8 @@ version: 0.2
 env:
   variables:
     IMAGE_NAME: main-portal
-    DOCKERFILE_PATH: main-portal/Dockerfile
-    CONTEXT: main-portal
+    DOCKERFILE_PATH: main_portal/Dockerfile
+    CONTEXT: main_portal
     ECR_REPO: 207567776727.dkr.ecr.us-west-2.amazonaws.com
     SECRET_NAME: docker/personal-access-token
     AWS_REGION: us-west-2
