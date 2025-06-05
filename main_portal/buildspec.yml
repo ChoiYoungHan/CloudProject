@@ -3,22 +3,44 @@ version: 0.2
 env:
   variables:
     IMAGE_NAME: main-portal
-    DOCKERFILE_PATH: main_portal/Dockerfile
-    CONTEXT: main_portal
+    DOCKERFILE_PATH: main-portal/Dockerfile
+    CONTEXT: main-portal
     ECR_REPO: 207567776727.dkr.ecr.us-west-2.amazonaws.com
+    SECRET_NAME: docker/personal-access-token
+    AWS_REGION: us-west-2
 
 phases:
+  install:
+    runtime-versions:
+      python: 3.10
+    commands:
+      - pip install boto3
   pre_build:
     commands:
+      - echo Fetching DockerHub credentials from Secrets Manager...
+      - |
+        CREDS=$(aws secretsmanager get-secret-value \
+          --secret-id $SECRET_NAME \
+          --region $AWS_REGION \
+          --query SecretString \
+          --output text)
+
+        export DOCKERHUB_USERNAME=$(echo $CREDS | python3 -c "import sys, json; print(json.load(sys.stdin)['DOCKERHUB_USERNAME'])")
+        export DOCKERHUB_PAT=$(echo $CREDS | python3 -c "import sys, json; print(json.load(sys.stdin)['DOCKERHUB_PAT'])")
+
+      - echo Logging in to DockerHub...
+      - echo $DOCKERHUB_PAT | docker login -u $DOCKERHUB_USERNAME --password-stdin
+
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin $ECR_REPO
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO
+
   build:
     commands:
       - echo Building Docker image...
       - docker build -t $IMAGE_NAME -f $DOCKERFILE_PATH $CONTEXT
+
   post_build:
     commands:
       - echo Tagging and pushing the Docker image...
       - docker tag $IMAGE_NAME:latest $ECR_REPO/$IMAGE_NAME:latest
       - docker push $ECR_REPO/$IMAGE_NAME:latest
-
