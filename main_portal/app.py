@@ -37,9 +37,9 @@ def show_all():
     for item in trend_items:
         try:
             ts = datetime.fromisoformat(item["timestamp"])
-            if ts >= three_hours_ago and int(item["rank"]) in [1, 2, 3]:
-                trend_keywords.add(item["keyword"])
-        except Exception:
+            if ts.tzinfo is None:
+                ts = ts.replace(tzinfo=timezone.utc)
+        except Exception as e:
             print("[ERROR] trend item 예외 발생:", item)
             print("         예외:", e)
             continue
