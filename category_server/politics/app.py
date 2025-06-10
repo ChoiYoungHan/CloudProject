@@ -46,6 +46,23 @@ def get_politics_news_detail(timestamp, title):
     items = response.get('Items', [])
     for item in items:
         if item['title'] == title:
+            # count 필드 +1 업데이트
+            table.update_item(
+                Key={
+                    'category': '정치',
+                    'timestamp': timestamp
+                },
+                UpdateExpression="SET #c = #c + :inc",
+                ExpressionAttributeNames={
+                    '#c': 'count'
+                },
+                ExpressionAttributeValues={
+                    ':inc': 1
+                }
+            )
+            # 업데이트된 결과를 반영하려면 최신 데이터를 다시 조회하거나 기존 item에 count +1 적용
+            item['count'] += 1  # UI 출력에 반영용
+            
             return render_template("detail.html", article=item)
     return "해당 뉴스 없음", 404
 
