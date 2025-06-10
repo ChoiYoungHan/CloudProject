@@ -32,7 +32,7 @@
 <div class="news-detail">
   <h1 class="news-title">{{ article.title }}</h1>
   <div class="news-meta">
-    <span class="news-author">기자: {{ article.author }}</span>
+    <span class="news-author">{{ article.author }}</span>
     <span class="news-time">{{ article.timestamp[:10] }} {{ article.timestamp[11:16] }}</span>
   </div>
   <img src="{{ article.image }}" alt="뉴스 이미지" class="news-image">

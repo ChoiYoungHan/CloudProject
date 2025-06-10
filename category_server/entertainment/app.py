@@ -41,7 +41,7 @@ def category_entertainment():
 def get_entertainment_news_detail(timestamp, title):
     title = unquote(title)
     response = table.query(
-        KeyConditionExpression=Key('category').eq('연예예') & Key('timestamp').eq(timestamp)
+        KeyConditionExpression=Key('category').eq('연예') & Key('timestamp').eq(timestamp)
     )
     items = response.get('Items', [])
     for item in items:

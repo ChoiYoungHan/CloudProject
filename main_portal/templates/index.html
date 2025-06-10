@@ -36,7 +36,10 @@
     '🔥 지금 화제인 글': 'hot',
     '정치 뉴스': 'politics',
     '사회 뉴스': 'society',
-    '연예 뉴스': 'entertainment'
+    '연예 뉴스': 'entertainment',
+    '정치': 'politics',
+    '사회': 'society',
+    '연예': 'entertainment'
   } %}
   
   {% for cat, news in [('🔥 지금 화제인 글', news_hot), ('정치 뉴스', news_politics), ('사회 뉴스', news_society), ('연예 뉴스', news_entertainment)] %}
@@ -48,7 +51,7 @@
 
     {% if news|length > 0 %}
     <!-- 대표 뉴스 -->
-    <a href="/category/{{ news[0]['category'] }}/{{ news[0]['timestamp'] }}/{{ news[0]['title'] | urlencode }}">
+    <a href="/category/{{ category_url_map.get(news[0]['category'], 'unknown') }}/{{ news[0]['timestamp'] }}/{{ news[0]['title'] | urlencode }}">
       <div class="main-news">
         <img src="{{ news[0]['image'] }}" class="thumbnail" alt="대표 이미지">
         <div class="main-content">
@@ -60,7 +63,7 @@
 
     <!-- 서브 뉴스 -->
     {% for item in news[1:4] %}
-    <a href="/category/{{ item['category'] }}/{{ item['timestamp'] }}/{{ item['title'] | urlencode }}">
+    <a href="/category/{{ category_url_map.get(item['category'], 'unknown') }}/{{ item['timestamp'] }}/{{ item['title'] | urlencode }}">
       <div class="sub-news">{{ item['title'] }}</div>
     </a>
     {% endfor %}
