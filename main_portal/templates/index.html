@@ -23,32 +23,51 @@
 <!-- 탭 바 -->
 <div class="category-tabs">
   <button onclick="location.href='/all'">전체</button>
-  <button onclick="loadCategory('정치')">정치</button>
-  <button onclick="loadCategory('사회')">사회</button>
-  <button onclick="loadCategory('연예')">연예</button>
+  <button onclick="location.href='/category/politics'">정치</button>
+  <button onclick="location.href='/category/society'">사회</button>
+  <button onclick="location.href='/category/entertainment'">연예</button>
 </div>
 
 <!-- 뉴스 카드 -->
 <div class="news-grid">
+
+  <!-- 뉴스 카드 반복 시작 -->
+  {% set category_url_map = {
+    '🔥 지금 화제인 글': 'hot',
+    '정치 뉴스': 'politics',
+    '사회 뉴스': 'society',
+    '연예 뉴스': 'entertainment'
+  } %}
+  
   {% for cat, news in [('🔥 지금 화제인 글', news_hot), ('정치 뉴스', news_politics), ('사회 뉴스', news_society), ('연예 뉴스', news_entertainment)] %}
   <div class="news-box">
-    <h3>{{ cat }}</h3>
+    <!-- h3도 링크로 감쌈 -->
+    <h3>
+      <a href="/category/{{ category_url_map.get(cat, 'all') }}">{{ cat }}</a>
+    </h3>
 
     {% if news|length > 0 %}
-    <div class="main-news">
-      <img src="{{ news[0]['image'] }}" class="thumbnail" alt="대표 이미지">
-      <div class="main-content">
-        <div class="title">{{ news[0]['title'] }}</div>
-        <div class="content">{{ news[0]['content'] }}</div>
+    <!-- 대표 뉴스 -->
+    <a href="/category/{{ news[0]['category'] }}/{{ news[0]['timestamp'] }}/{{ news[0]['title'] | urlencode }}">
+      <div class="main-news">
+        <img src="{{ news[0]['image'] }}" class="thumbnail" alt="대표 이미지">
+        <div class="main-content">
+          <div class="title">{{ news[0]['title'] }}</div>
+          <div class="content">{{ news[0]['content'] }}</div>
+        </div>
       </div>
-    </div>
+    </a>
 
-    {% for item in news[1:3] %}
+    <!-- 서브 뉴스 -->
+    {% for item in news[1:4] %}
+    <a href="/category/{{ item['category'] }}/{{ item['timestamp'] }}/{{ item['title'] | urlencode }}">
       <div class="sub-news">{{ item['title'] }}</div>
+    </a>
     {% endfor %}
-  {% else %}
+
+    {% else %}
     <div class="no-news">뉴스가 없습니다.</div>
-  {% endif %}
+    {% endif %}
 
   </div>
   {% endfor %}
@@ -56,4 +75,3 @@
 
 </body>
 </html>
-

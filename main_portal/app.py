@@ -20,7 +20,7 @@ def show_all():
     items.sort(key=itemgetter("timestamp"), reverse=True)
 
     def filter_category(cat):
-        return [item for item in items if item["category"] == cat][:3]
+        return [item for item in items if item["category"] == cat][:4]
 
     return render_template("index.html",
                            news_hot=filter_category("지금 화제"),
