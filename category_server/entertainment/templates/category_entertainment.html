@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>연예예 뉴스</title>
+  <link rel="stylesheet" href="/category/entertainment/static/style.css">
+</head>
+<body>
+
+<!-- 상단 바 -->
+<div class="top-bar">
+  <div class="top-inner">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="로고">
+    </div>
+    <div class="search-container">
+      <input type="text" placeholder="검색어를 입력하세요.">
+      <button type="submit">🔍</button>
+    </div>
+  </div>
+</div>  
+
+<!-- 탭바 고정 -->
+<div class="category-tabs">
+  <button onclick="location.href='/all'">전체</button>
+  <button onclick="location.href='/category/politics'">정치</button>
+  <button onclick="location.href='/category/society'">사회</button>
+  <button onclick="location.href='/category/entertainment'">연예</button>
+</div>
+
+<!-- 화제 뉴스 카드 -->
+<div class="news-box">
+  <h3>🔥 지금 화제인 연예 뉴스</h3>
+  {% if hot_news %}
+    {% for article in hot_news %}
+      <a href="/category/entertainment/{{ article['timestamp'] }}/{{ article['title'] | urlencode }}">
+        <div class="main-news">
+          <img src="{{ article['image'] }}" class="thumbnail" alt="이미지">
+          <div class="main-content">
+            <div class="title">{{ article['title'] }}</div>
+            <div class="content">{{ article['content'] }}</div>
+          </div>
+        </div>
+      </a>
+    {% endfor %}
+  {% else %}
+    <div class="no-news">뉴스가 없습니다.</div>
+  {% endif %}
+</div>
+
+<!-- 최신 뉴스 카드 -->
+<div class="news-box">
+  <h3>최신 뉴스</h3>
+  {% for article in latest_news %}
+    <a href="/category/entertainment/{{ article['timestamp'] }}/{{ article['title'] | urlencode }}">
+      <div class="main-news">
+        <img src="{{ article['image'] }}" class="thumbnail" alt="이미지">
+        <div class="main-content">
+          <div class="title">{{ article['title'] }}</div>
+          <div class="content">{{ article['content'] }}</div>
+        </div>
+      </div>
+    </a>
+  {% endfor %}
+</div>
+
+</body>
+</html>
