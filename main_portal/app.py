@@ -3,15 +3,11 @@ import boto3
 from boto3.dynamodb.conditions import Key
 from operator import itemgetter
 import os
-import time
-import logging
 
 app = Flask(__name__)
 
 dynamodb = boto3.resource("dynamodb", region_name="us-west-2")
 table = dynamodb.Table("NewsArticles")
-
-logging.basicConfig(filename="app.log", level=logging.INFO)
 
 @app.route("/")
 def index():
@@ -21,28 +17,17 @@ def index():
 def show_all():
     response = table.scan()
     items = response.get("Items", [])
-    
-    for item in items:
-        if 'timestamp' in item:
-            item['date'] = item['timestamp'].split("T")[0]
-    
     items.sort(key=itemgetter("timestamp"), reverse=True)
-    return render_template("index.html", news_list=items, active_category="전체")
 
-@app.route("/api/all")
-def api_all():
-    response = table.scan()
-    items = response.get("Items", [])
-    items.sort(key=itemgetter("timestamp"), reverse=True)
-    return jsonify(items[:20])
+    def filter_category(cat):
+        return [item for item in items if item["category"] == cat][:3]
 
-@app.route("/logs")
-def show_logs():
-    log_path = "app.log"
-    if not os.path.exists(log_path):
-        return "로그 파일 없음", 404
-    with open(log_path, "r") as f:
-        return f"<pre>{f.read()}</pre>"
+    return render_template("index.html",
+                           news_hot=filter_category("지금 화제"),
+                           news_politics=filter_category("정치"),
+                           news_society=filter_category("사회"),
+                           news_entertainment=filter_category("연예"),
+                           active_category="전체")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

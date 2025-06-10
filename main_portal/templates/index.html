@@ -2,176 +2,58 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>뉴스 페이지</title>
+  <title>Cloud 뉴스 포털</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
 <!-- 상단 바 -->
 <div class="top-bar">
-  <div class="logo">
-    <img src="{{ url_for('static', filename='logo.png') }}" alt="로고">
-  </div>
-
-  <div class="search-box">
-    <form method="GET" action="/" class="search-form">
-      <input type="text" name="keyword" placeholder="검색창">
+  <div class="top-inner">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="로고">
+    </div>
+    <div class="search-container">
+      <input type="text" placeholder="검색어를 입력하세요.">
       <button type="submit">🔍</button>
-    </form>
+    </div>
   </div>
 </div>
 
-<!-- 카테고리 탭 -->
+<!-- 탭 바 -->
 <div class="category-tabs">
-  <button onclick="loadAll()">전체</button>
-  <button onclick="loadCategory('politics')">정치</button>
-  <button onclick="loadCategory('society')">사회</button>
-  <button onclick="loadCategory('entertainment')">연예</button>
+  <button onclick="location.href='/all'">전체</button>
+  <button onclick="loadCategory('정치')">정치</button>
+  <button onclick="loadCategory('사회')">사회</button>
+  <button onclick="loadCategory('연예')">연예</button>
 </div>
 
-<!-- 뉴스 리스트 테이블 -->
-<table class="news-table">
-  <thead>
-    <tr>
-      <th>카테고리</th>
-      <th>제목</th>
-      <th>작성자</th>
-      <th>작성일</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for news in news_list %}
-    <tr>
-      <td>{{ news.category }}</td>
-      <td class="title">
-        <a href="#"
-           data-category="{{ news.category }}"
-           data-title="{{ news.title }}"
-           data-timestamp="{{ news.timestamp }}">
-           {{ news.title }}
-        </a>
-      </td>
-      <td>{{ news.author }}</td>
-      <td>{{ news.date }}</td>
-    </tr>
+<!-- 뉴스 카드 -->
+<div class="news-grid">
+  {% for cat, news in [('🔥 지금 화제인 글', news_hot), ('정치 뉴스', news_politics), ('사회 뉴스', news_society), ('연예 뉴스', news_entertainment)] %}
+  <div class="news-box">
+    <h3>{{ cat }}</h3>
+
+    {% if news|length > 0 %}
+    <div class="main-news">
+      <img src="{{ news[0]['image'] }}" class="thumbnail" alt="대표 이미지">
+      <div class="main-content">
+        <div class="title">{{ news[0]['title'] }}</div>
+        <div class="content">{{ news[0]['content'] }}</div>
+      </div>
+    </div>
+
+    {% for item in news[1:3] %}
+      <div class="sub-news">{{ item['title'] }}</div>
     {% endfor %}
-  </tbody>
-</table>
+  {% else %}
+    <div class="no-news">뉴스가 없습니다.</div>
+  {% endif %}
 
-<!-- 상세 뉴스 영역 -->
-<div class="news-detail" style="display: none;">
-  <h2 id="detail-title"></h2>
-  <p><strong>작성일:</strong> <span id="detail-date"></span></p>
-  <p><strong>작성자:</strong> <span id="detail-author"></span></p>
-  <pre id="detail-content"></pre>
-  <button onclick="goBackToList()">← 목록으로 돌아가기</button>
+  </div>
+  {% endfor %}
 </div>
-
-<script>
-  const categoryMap = {
-    '정치': 'politics',
-    '사회': 'society',
-    '연예': 'entertainment'
-  };
-
-  function loadCategory(cat) {
-    const url = `http://k8s-default-newsingr-fc76efc355-1769841591.us-west-2.elb.amazonaws.com/category/${cat}`;
-    history.pushState(null, '', `/category/${cat}`);
-
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        const tbody = document.querySelector('.news-table tbody');
-        tbody.innerHTML = '';
-
-        data.forEach(item => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${item.category}</td>
-            <td class="title">
-              <a href="#"
-                 data-category="${item.category}"
-                 data-title="${item.title}"
-                 data-timestamp="${item.timestamp}">
-                 ${item.title}
-              </a>
-            </td>
-            <td>${item.author}</td>
-            <td>${item.timestamp.split("T")[0]}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        document.querySelector('.news-table').style.display = 'table';
-        document.querySelector('.news-detail').style.display = 'none';
-      });
-  }
-
-  function loadAll() {
-    fetch(`http://k8s-default-newsingr-fc76efc355-1769841591.us-west-2.elb.amazonaws.com/api/all`)
-      .then(res => res.json())
-      .then(data => {
-        history.pushState(null, '', `/all`);
-        const tbody = document.querySelector('.news-table tbody');
-        tbody.innerHTML = '';
-
-        data.forEach(item => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${item.category}</td>
-            <td class="title">
-              <a href="#"
-                 data-category="${item.category}"
-                 data-title="${item.title}"
-                 data-timestamp="${item.timestamp}">
-                 ${item.title}
-              </a>
-            </td>
-            <td>${item.author}</td>
-            <td>${item.timestamp.split("T")[0]}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        document.querySelector('.news-table').style.display = 'table';
-        document.querySelector('.news-detail').style.display = 'none';
-      });
-  }
-
-  document.addEventListener('click', function (e) {
-    if (e.target.matches('.title a')) {
-      e.preventDefault();
-
-      const categoryKo = e.target.dataset.category;
-      const category = categoryMap[categoryKo];
-      const title = e.target.dataset.title;
-      const timestamp = e.target.dataset.timestamp;
-      const encodedTitle = encodeURIComponent(title);
-
-      const url = `http://k8s-default-newsingr-fc76efc355-1769841591.us-west-2.elb.amazonaws.com/category/${category}/${timestamp}/${encodedTitle}`;
-
-      history.pushState(null, '', `/category/${category}/${timestamp}/${encodedTitle}`);
-
-
-      fetch(url)
-        .then(res => res.json())
-        .then(data => {
-          document.querySelector('.news-table').style.display = 'none';
-          document.querySelector('.news-detail').style.display = 'block';
-
-          document.getElementById('detail-title').textContent = data.title;
-          document.getElementById('detail-date').textContent = data.timestamp.split("T")[0];
-          document.getElementById('detail-author').textContent = data.author;
-          document.getElementById('detail-content').textContent = data.content;
-        });
-    }
-  });
-
-  function goBackToList() {
-    document.querySelector('.news-detail').style.display = 'none';
-    document.querySelector('.news-table').style.display = 'table';
-  }
-</script>
 
 </body>
 </html>
+
