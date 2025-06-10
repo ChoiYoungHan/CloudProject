@@ -23,14 +23,14 @@ def category_entertainment():
 
     # 최근 3시간 내 + count 높은 순
     hot_news = table.scan(
-        FilterExpression=Attr('category').eq('연예예') & 
+        FilterExpression=Attr('category').eq('연예') & 
                          Attr('timestamp').gt(three_hours_ago.isoformat())
     ).get('Items', [])
     hot_news_sorted = sorted(hot_news, key=lambda x: (-x['count'], x['timestamp']))[:3]
 
     # 최신 뉴스 (20개, 시간 역순)
     latest_news = table.query(
-        KeyConditionExpression=Key('category').eq('연예예'),
+        KeyConditionExpression=Key('category').eq('연예'),
         ScanIndexForward=False,
         Limit=20
     ).get('Items', [])
