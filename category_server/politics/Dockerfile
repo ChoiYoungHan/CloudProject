@@ -4,7 +4,7 @@ WORKDIR /app
 
 # requirements.txt 먼저 복사 (캐시 활용)
 COPY requirements.txt .
-
+COPY templates/ /app/templates/
 
 RUN pip install --no-cache-dir --upgrade pip setuptools && \
     pip install --no-cache-dir -r requirements.txt

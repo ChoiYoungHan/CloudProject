@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ article.title }} - Cloud 뉴스</title>
+  <link rel="stylesheet" href="/category/society/static/style.css">
+</head>
+<body>
+
+<!-- 상단 바 -->
+<div class="top-bar">
+  <div class="top-inner">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="로고">
+    </div>
+    <div class="search-container">
+      <input type="text" placeholder="검색어를 입력하세요.">
+      <button type="submit">🔍</button>
+    </div>
+  </div>
+</div>
+
+<!-- 탭 바 -->
+<div class="category-tabs">
+  <button onclick="location.href='/all'">전체</button>
+  <button onclick="location.href='/category/politics'">정치</button>
+  <button onclick="location.href='/category/society'">사회</button>
+  <button onclick="location.href='/category/entertainment'">연예</button>
+</div>
+
+<!-- 뉴스 상세 보기 -->
+<div class="news-detail">
+  <h1 class="news-title">{{ article.title }}</h1>
+  <div class="news-meta">
+    <span class="news-author">기자: {{ article.author }}</span>
+    <span class="news-time">{{ article.timestamp[:10] }} {{ article.timestamp[11:16] }}</span>
+  </div>
+  <img src="{{ article.image }}" alt="뉴스 이미지" class="news-image">
+  <div class="news-content">{{ article.content }}</div>
+</div>
+
+</body>
+</html>
