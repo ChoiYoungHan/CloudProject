@@ -17,36 +17,39 @@ def index():
 
 @app.route("/all")
 def show_all():
-    # 전체 뉴스 스캔
     response = news_table.scan()
     all_news = response.get("Items", [])
     all_news.sort(key=itemgetter("timestamp"), reverse=True)
 
-    # 카테고리별 뉴스 필터링
     def filter_category(cat):
         return [item for item in all_news if item["category"] == cat][:4]
 
-    # 최근 6시간 내 trend_top6에서 rank 1~3 키워드 추출
-    now = datetime.now(timezone.utc)
-    three_hours_ago = now - timedelta(hours=6)
-
-    trend_keywords = set()
+    # 🔄 최신 trend_top6 스냅샷에서 키워드 6개만 추출
     trend_items = trend_table.scan().get("Items", [])
-    print("[DEBUG] trend_table에서 가져온 항목 수:", len(trend_items))
-    print("[DEBUG] trend_table 샘플:", trend_items[:1])
+    parsed_items = []
     for item in trend_items:
         try:
             ts = datetime.fromisoformat(item["timestamp"])
             if ts.tzinfo is None:
                 ts = ts.replace(tzinfo=timezone.utc)
-        except Exception as e:
-            print("[ERROR] trend item 예외 발생:", item)
-            print("         예외:", e)
+            parsed_items.append({**item, "parsed_ts": ts})
+        except Exception:
             continue
-    
-    print("[DEBUG] 추출된 트렌드 키워드:", trend_keywords)
 
-    # 키워드 포함된 뉴스 필터링
+    # 📌 최신 timestamp 구하기
+    if parsed_items:
+        latest_ts = max(i["parsed_ts"] for i in parsed_items)
+        latest_snapshot = [i for i in parsed_items if i["parsed_ts"] == latest_ts]
+
+        # 🥇 최신 스냅샷에서 rank 기준으로 상위 6개 키워드 추출
+        trend_keywords = {
+            i["keyword"] for i in sorted(latest_snapshot, key=lambda x: int(x["rank"]))[:6]
+        }
+    else:
+        trend_keywords = set()
+        
+
+    # 📰 키워드 포함된 뉴스 필터링
     news_hot = []
     for news in all_news:
         for kw in trend_keywords:
@@ -54,16 +57,16 @@ def show_all():
                 news_hot.append(news)
                 break
 
-    # count 기준 정렬 후 상위 4개
+    # 🔢 조회수 기준 정렬
     news_hot = sorted(news_hot, key=lambda x: -int(x.get("count", 0)))[:4]
-    print("[DEBUG] 핫 뉴스:", news_hot)
 
     return render_template("index.html",
                            news_hot=news_hot,
                            news_politics=filter_category("정치"),
                            news_society=filter_category("사회"),
                            news_entertainment=filter_category("연예"),
-                           active_category="전체")
+                           active_category="전체"
+                           )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)

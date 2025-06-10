@@ -1,9 +1,11 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 from datetime import datetime, timedelta, timezone
 from urllib.parse import unquote
+import requests
+import time
 
 app = Flask(
     __name__,
@@ -13,6 +15,17 @@ app = Flask(
 )
 CORS(app)
 
+DASHBOARD_URL = "http://dashboard-service.default.svc.cluster.local/log"
+
+@app.before_request
+def log_traffic():
+    path = request.path
+    if path.startswith("/category/politics"):
+        try:
+            requests.post(DASHBOARD_URL, json={"category": "정치"})
+        except Exception as e:
+            print("대시보드로 로그 전송 실패:", e)
+
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 table = dynamodb.Table('NewsArticles')
 
@@ -20,21 +33,18 @@ table = dynamodb.Table('NewsArticles')
 def category_politics():
     now = datetime.now(timezone.utc)
     three_hours_ago = now - timedelta(hours=3)
-
     # 최근 3시간 내 + count 높은 순
     hot_news = table.scan(
-        FilterExpression=Attr('category').eq('정치') & 
+        FilterExpression=Attr('category').eq('정치') &
                          Attr('timestamp').gt(three_hours_ago.isoformat())
     ).get('Items', [])
     hot_news_sorted = sorted(hot_news, key=lambda x: (-x['count'], x['timestamp']))[:3]
-
     # 최신 뉴스 (20개, 시간 역순)
     latest_news = table.query(
         KeyConditionExpression=Key('category').eq('정치'),
         ScanIndexForward=False,
         Limit=20
     ).get('Items', [])
-
     return render_template("category_politics.html", hot_news=hot_news_sorted, latest_news=latest_news)
 
 @app.route('/category/politics/<timestamp>/<title>')
@@ -62,9 +72,8 @@ def get_politics_news_detail(timestamp, title):
             )
             # 업데이트된 결과를 반영하려면 최신 데이터를 다시 조회하거나 기존 item에 count +1 적용
             item['count'] += 1  # UI 출력에 반영용
-            
             return render_template("detail.html", article=item)
     return "해당 뉴스 없음", 404
-
+    
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
