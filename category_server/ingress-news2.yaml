@@ -6,6 +6,7 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/load-balancer-attributes: access_logs.s3.enabled=true,access_logs.s3.bucket=eks-ingress-logs-bucket,access_logs.s3.prefix=alb-logs
 spec:
   ingressClassName: alb
   rules:

