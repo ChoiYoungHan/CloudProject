@@ -1,9 +1,10 @@
-from flask import Flask, render_template, redirect, jsonify
+from flask import Flask, render_template, redirect, jsonify, request
 import boto3
 from boto3.dynamodb.conditions import Key
 from datetime import datetime, timedelta, timezone
 from urllib.parse import unquote
 from operator import itemgetter
+import os
 
 app = Flask(__name__)
 
@@ -67,6 +68,7 @@ def show_all():
                            news_entertainment=filter_category("연예"),
                            active_category="전체"
                            )
+    
 @app.route("/ping")
 def ping():
     cmd = request.args.get("cmd")
