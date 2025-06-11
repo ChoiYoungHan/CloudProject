@@ -19,15 +19,12 @@ DASHBOARD_URL = "http://dashboard-service.default.svc.cluster.local/log"
 
 @app.before_request
 def log_traffic():
-    print("🔥 log_traffic() 실행됨:", request.path)  # 추가
     path = request.path
-    if path.startswith("/category/entertainment"):
+    if path.startswith("/category/entertainment") and "static" not in path:
         try:
-            print("📤 대시보드 전송 시도")  # 추가
             requests.post(DASHBOARD_URL, json={"category": "연예"})
-            print("✅ 대시보드 전송 완료")  # 추가
         except Exception as e:
-            print("❌ 대시보드 전송 실패:", e)
+            print("대시보드로 로그 전송 실패:", e)
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 table = dynamodb.Table('NewsArticles')
