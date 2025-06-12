@@ -34,6 +34,7 @@ def metrics():
 def log_traffic():
     path = request.path
     if path.startswith("/category/entertainment") and "static" not in path:
+        category_requests.labels(category="entertainment").inc()
         try:
             requests.post(DASHBOARD_URL, json={"category": "연예"})
         except Exception as e:
