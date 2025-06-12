@@ -29,11 +29,12 @@ DASHBOARD_URL = "http://dashboard-service.default.svc.cluster.local/log"
 def log_traffic():
     path = request.path
     if path.startswith("/category/society") and "static" not in path:
-        category_requests.labels(category="entertainment").inc()
+        category_requests.labels(category="society").inc()
         try:
             requests.post(DASHBOARD_URL, json={"category": "사회"})
         except Exception as e:
             print("대시보드로 로그 전송 실패:", e)
+            
 # :흰색_확인_표시: Prometheus 메트릭 수집 엔드포인트 추가
 @app.route("/metrics")
 def metrics():

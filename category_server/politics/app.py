@@ -30,7 +30,7 @@ DASHBOARD_URL = "http://dashboard-service.default.svc.cluster.local/log"
 def log_traffic():
     path = request.path
     if path.startswith("/category/politics") and "static" not in path:
-        category_requests.labels(category="entertainment").inc()
+        category_requests.labels(category="politics").inc()
         try:
             requests.post(DASHBOARD_URL, json={"category": "정치"})
         except Exception as e:
