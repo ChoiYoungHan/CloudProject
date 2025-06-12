@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from urllib.parse import unquote
 import requests
 import time
+from prometheus_client import Counter, generate_latest
 
 app = Flask(
     __name__,
@@ -14,6 +15,14 @@ app = Flask(
     template_folder="templates"
 )
 CORS(app)
+
+# :흰색_확인_표시: 요청 수 카운터 정의
+category_requests = Counter(
+    "category_http_requests_total",
+    "Total HTTP requests by category",
+    ["category"]
+)
+
 
 DASHBOARD_URL = "http://dashboard-service.default.svc.cluster.local/log"
 
@@ -25,6 +34,12 @@ def log_traffic():
             requests.post(DASHBOARD_URL, json={"category": "정치"})
         except Exception as e:
             print("대시보드로 로그 전송 실패:", e)
+
+
+# :흰색_확인_표시: Prometheus 메트릭 수집 엔드포인트 추가
+@app.route("/metrics")
+def metrics():
+    return generate_latest(), 200, {"Content-Type": "text/plain"}
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-2')
 table = dynamodb.Table('NewsArticles')
