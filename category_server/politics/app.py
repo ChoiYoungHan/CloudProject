@@ -93,3 +93,4 @@ def get_politics_news_detail(timestamp, title):
     
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+    
