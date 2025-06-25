@@ -60,5 +60,25 @@
   {% endfor %}
 </div>
 
+<script>
+  window.addEventListener('load', function () {
+    const bodyText = document.body.innerText || '';
+    const isError = bodyText.includes('502') || bodyText.includes('504') || bodyText.includes('500') || bodyText.includes('Bad Gateway');
+
+    if (isError || document.body.innerHTML.trim() === '') {
+      document.body.innerHTML = `
+        <div style="text-align: center; margin-top: 100px;">
+          <p>⏳ 서버 응답이 없습니다. 복구 중입니다...</p>
+          <p>5초 후 자동 재접속합니다.</p>
+        </div>
+      `;
+      setTimeout(() => {
+        location.reload();
+      }, 5000);
+    }
+  });
+</script>
+
+
 </body>
 </html>
