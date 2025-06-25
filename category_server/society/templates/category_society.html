@@ -11,7 +11,7 @@
 <div class="top-bar">
   <div class="top-inner">
     <div class="logo">
-      <img src="/category/society/static/logo.png" alt="로고">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="로고">
     </div>
   </div>
 </div>  
@@ -24,75 +24,42 @@
   <button onclick="location.href='/category/entertainment'">연예</button>
 </div>
 
-<!-- 콘텐츠 로딩 영역 -->
+<!-- 화제 뉴스 카드 -->
 <div class="news-box">
   <h3>🔥 지금 화제인 사회 뉴스</h3>
-  <div id="hot-news"></div>
+  {% if hot_news %}
+    {% for article in hot_news %}
+      <a href="/category/society/{{ article['timestamp'] }}/{{ article['title'] | urlencode }}">
+        <div class="main-news">
+          <img src="{{ article['image'] }}" class="thumbnail" alt="이미지">
+          <div class="main-content">
+            <div class="title">{{ article['title'] }}</div>
+            <div class="content">{{ article['content'] }}</div>
+          </div>
+        </div>
+      </a>
+    {% endfor %}
+  {% else %}
+    <div class="no-news">뉴스가 없습니다.</div>
+  {% endif %}
 </div>
 
+<!-- 최신 뉴스 카드 -->
 <div class="news-box">
   <h3>최신 뉴스</h3>
-  <div id="latest-news"></div>
+  {% for article in latest_news %}
+    <a href="/category/society/{{ article['timestamp'] }}/{{ article['title'] | urlencode }}">
+      <div class="main-news">
+        <img src="{{ article['image'] }}" class="thumbnail" alt="이미지">
+        <div class="main-content">
+          <div class="title">{{ article['title'] }}</div>
+          <div class="content">{{ article['content'] }}</div>
+        </div>
+      </div>
+    </a>
+  {% endfor %}
 </div>
 
-<!-- 로딩 상태 및 오류 출력 -->
-<div id="loader" class="no-news">로딩 중...</div>
-
-<script>
-async function fetchNews() {
-  const loader = document.getElementById("loader");
-  loader.style.display = "block";
-  loader.innerText = "로딩 중...";
-
-  try {
-    const res = await fetch("/api/category/society");
-    if (!res.ok) throw new Error("오류 응답");
-    const data = await res.json();
-    loader.style.display = "none";
-    renderHotNews(data.hot_news);
-    renderLatestNews(data.latest_news);
-  } catch (err) {
-    loader.innerText = "⚠️ 서버 오류. 5초 후 재시도합니다.";
-    setTimeout(fetchNews, 5000);
-  }
-}
-
-function renderHotNews(newsList) {
-  const area = document.getElementById("hot-news");
-  if (newsList.length === 0) {
-    area.innerHTML = '<div class="no-news">뉴스가 없습니다.</div>';
-    return;
-  }
-  area.innerHTML = newsList.map(article => `
-    <a href="/category/society/${article.timestamp}/${encodeURIComponent(article.title)}">
-      <div class="main-news">
-        <img src="${article.image}" class="thumbnail" alt="이미지">
-        <div class="main-content">
-          <div class="title">${article.title}</div>
-          <div class="content">${article.content}</div>
-        </div>
-      </div>
-    </a>
-  `).join("");
-}
-
-function renderLatestNews(newsList) {
-  const area = document.getElementById("latest-news");
-  area.innerHTML = newsList.map(article => `
-    <a href="/category/society/${article.timestamp}/${encodeURIComponent(article.title)}">
-      <div class="main-news">
-        <img src="${article.image}" class="thumbnail" alt="이미지">
-        <div class="main-content">
-          <div class="title">${article.title}</div>
-          <div class="content">${article.content}</div>
-        </div>
-      </div>
-    </a>
-  `).join("");
-}
-
-fetchNews();
-</script>
 
 </body>
 </html>
