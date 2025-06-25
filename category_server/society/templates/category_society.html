@@ -63,9 +63,11 @@
 <script>
   window.addEventListener('load', function () {
     const bodyText = document.body.innerText || '';
-    const isError = bodyText.includes('502') || bodyText.includes('504') || bodyText.includes('500') || bodyText.includes('Bad Gateway');
+    
+    // 오류 텍스트가 명확하게 나타난 경우만 감지 (너무 광범위하지 않게)
+    const isServerError = bodyText.includes('502 Bad Gateway') || bodyText.includes('504 Gateway Timeout');
 
-    if (isError || document.body.innerHTML.trim() === '') {
+    if (isServerError) {
       document.body.innerHTML = `
         <div style="text-align: center; margin-top: 100px;">
           <p>⏳ 서버 응답이 없습니다. 복구 중입니다...</p>
@@ -78,6 +80,7 @@
     }
   });
 </script>
+
 
 
 </body>
