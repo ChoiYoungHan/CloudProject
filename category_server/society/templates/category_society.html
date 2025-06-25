@@ -65,7 +65,7 @@
     const bodyText = document.body.innerText || '';
     
     // 오류 텍스트가 명확하게 나타난 경우만 감지 (너무 광범위하지 않게)
-    const isServerError = bodyText.includes('502 Bad Gateway') || bodyText.includes('504 Gateway Timeout');
+    const isServerError = bodyText.includes('502 Bad Gateway') || bodyText.includes('504 Gateway Timeout') || bodyText.includes('503 Service Temporarily Unavailable');
 
     if (isServerError) {
       document.body.innerHTML = `
